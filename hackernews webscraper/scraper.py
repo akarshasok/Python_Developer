@@ -3,22 +3,26 @@ from bs4 import BeautifulSoup
 import pandas as pd
 l=[]
 l1=[]
-for a in range(1,6):
+for a in range(1,2):
     re = requests.get('https://news.ycombinator.com/news'+f'?p={a}')
     soup = BeautifulSoup(re.text,'html.parser')
-    titles=list( soup.select(".titleline"))
+    titles=list(soup.select(".titleline"))
+
     scores=list(soup.select(".score"))
     l+=titles
     l1+=scores
-title_list=[]
-link=[]
-score=[]
-for i in l:
-    title_list.append(i.text)
-    link.append(i.find('a').get('href'))
-for j in l1:
-    score.append(int(j.text.split()[0]))
+d=[]
+for i,j in enumerate(l):
+    title = j.text
+    links = j.find('a').get('href')
+    if i<len(l1) and i is not None:
+        score = int(l1[i].text.split()[0])
+    elif i is None:
+        score = 0
+    d.append({'title':title,'links':links,'score':score})
 
-d= {"title":title_list,"links":link,"scores":score}
+df =pd.DataFrame(d)
+print(df)
 
-print(len(d['scores']))
+
+
